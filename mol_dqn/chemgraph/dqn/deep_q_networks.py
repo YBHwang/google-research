@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2018 The Google Research Authors.
+# Copyright 2019 The Google Research Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Lint as: python2, python3
 """DeepQNetwork models for molecule generation."""
 
 from __future__ import absolute_import
@@ -27,7 +28,11 @@ from rdkit import Chem
 from rdkit import DataStructs
 from rdkit.Chem import AllChem
 
+from six.moves import range
+from six.moves import zip
 import tensorflow as tf
+from tensorflow.contrib import layers as contrib_layers
+from tensorflow.contrib import training as contrib_training
 
 
 class DeepQNetwork(object):
@@ -197,7 +202,7 @@ class DeepQNetwork(object):
     # the asymptotic relative efficiency of the l1 loss estimator is better
     # for heavy-tailed distributions.
     errors = tf.where(
-        tf.abs(td_error) < 1.0, tf.square(td_error),
+        tf.abs(td_error) < 1.0, tf.square(td_error) * 0.5,
         1.0 * (tf.abs(td_error) - 0.5))
     weighted_error = tf.reduce_mean(error_weight * errors)
     return q_values, td_error, weighted_error, q_fn_vars, q_tp1_vars
@@ -291,7 +296,7 @@ class DeepQNetwork(object):
     """
     with tf.variable_scope(self.scope, reuse=self.reuse):
 
-      self.optimization_op = tf.contrib.layers.optimize_loss(
+      self.optimization_op = contrib_layers.optimize_loss(
           loss=self.weighted_error,
           global_step=tf.train.get_or_create_global_step(),
           learning_rate=self.learning_rate,
@@ -685,7 +690,7 @@ def get_hparams(**kwargs):
   Returns:
     A HParams object containing all the hyperparameters.
   """
-  hparams = tf.contrib.training.HParams(
+  hparams = contrib_training.HParams(
       atom_types=['C', 'O', 'N'],
       max_steps_per_episode=40,
       allow_removal=True,

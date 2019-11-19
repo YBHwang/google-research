@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2018 The Google Research Authors.
+# Copyright 2019 The Google Research Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,11 +25,11 @@ import os
 import random
 import time
 from absl import logging
+import gin
 import gym
 from gym import spaces
 import numpy as np
 from PIL import Image
-import gin.tf
 import pybullet
 from dql_grasping import kuka
 

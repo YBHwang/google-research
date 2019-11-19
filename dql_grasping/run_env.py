@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2018 The Google Research Authors.
+# Copyright 2019 The Google Research Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,11 +23,11 @@ from __future__ import print_function
 import collections
 import datetime
 import os
+import gin
 import numpy as np
 import PIL.Image as Image
 import six
 import tensorflow as tf
-import gin.tf
 
 
 def encode_image_array_as_png_str(image):
@@ -124,6 +124,9 @@ def run_env(env,
       tf.logging.info('Average %d collect episodes reward: %f' %
                       (len(episode_rewards), np.mean(episode_rewards)))
 
+  tf.logging.info('Closing environment.')
+  env.close()
+
   if replay_writer:
     replay_writer.close()
 
@@ -131,12 +134,7 @@ def run_env(env,
     summary_values = [
         tf.Summary.Value(
             tag='%s/episode_reward' % tag,
-            simple_value=np.mean(episode_rewards)),
-        # TODO(konstantinos): Move this out of task-agnostic code
-        tf.Summary.Value(
-            tag='%s/input_image' % tag,
-            image=tf.Summary.Image(
-                encoded_image_string=encode_image_array_as_png_str(obs)))
+            simple_value=np.mean(episode_rewards))
     ]
     for step, q_values in episode_q_values.items():
       summary_values.append(

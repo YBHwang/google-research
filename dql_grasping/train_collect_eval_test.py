@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2018 The Google Research Authors.
+# Copyright 2019 The Google Research Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,15 +22,15 @@ from __future__ import print_function
 import os
 
 from absl import flags
-import gin.tf
+import gin
+import tensorflow as tf
 from dql_grasping import gin_imports  # pylint: disable=unused-import
 from dql_grasping import grasping_env
 from dql_grasping import train_collect_eval
-from tensorflow.python.platform import test
 FLAGS = flags.FLAGS
 
 
-class TrainCollectEvalTest(test.TestCase):
+class TrainCollectEvalTest(tf.test.TestCase):
 
   def setUp(self):
     super(TrainCollectEvalTest, self).setUp()
@@ -65,4 +65,4 @@ class TrainCollectEvalTest(test.TestCase):
 
 
 if __name__ == '__main__':
-  test.main()
+  tf.test.main()

@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2018 The Google Research Authors.
+# Copyright 2019 The Google Research Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,21 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Lint as: python3
 """This is a ResNet-50 model.
 
 """
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-from absl import flags
-import tensorflow as tf
-
-FLAGS = flags.FLAGS
-
-BATCH_NORM_DECAY = 0.9
-BATCH_NORM_EPSILON = 1e-5
+from six.moves import range
+import tensorflow.compat.v1 as tf
 
 
 def batch_norm_relu(inputs,
@@ -49,8 +40,8 @@ def batch_norm_relu(inputs,
   inputs = tf.layers.batch_normalization(
       inputs=inputs,
       axis=axis,
-      momentum=BATCH_NORM_DECAY,
-      epsilon=BATCH_NORM_EPSILON,
+      momentum=0.9,
+      epsilon=1e-5,
       center=True,
       scale=True,
       training=is_training,

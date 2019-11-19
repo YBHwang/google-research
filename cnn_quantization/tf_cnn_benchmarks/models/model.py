@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2018 The Google Research Authors.
+# Copyright 2019 The Google Research Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import tensorflow as tf
 
 from cnn_quantization.tf_cnn_benchmarks import convnet_builder
 from cnn_quantization.tf_cnn_benchmarks import mlperf
+from tensorflow.contrib import framework as contrib_framework
 
 # BuildNetworkResult encapsulate the result (e.g. logits) of a
 # Model.build_network() call.
@@ -278,7 +279,7 @@ class CNNModel(Model):
         mean=127,
         stddev=60,
         name=self.model_name + '_synthetic_inputs')
-    inputs = tf.contrib.framework.local_variable(inputs, name=input_name)
+    inputs = contrib_framework.local_variable(inputs, name=input_name)
     labels = tf.random_uniform(
         label_shape,
         minval=0,

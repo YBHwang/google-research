@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2018 The Google Research Authors.
+# Copyright 2019 The Google Research Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Lint as: python2, python3
 """Library for scoring and evaluation of text samples.
 
 Aggregation functions use bootstrap resampling to compute confidence intervals
@@ -28,7 +29,7 @@ import collections
 
 import numpy as np
 import six
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import range
 
 
 class Score(
@@ -46,6 +47,7 @@ class BaseScorer(object):
     Args:
       target: Text containing the target (ground truth) text.
       prediction: Text containing the predicted text.
+
     Returns:
       A dict mapping each score_type (string) to Score object.
     """
@@ -76,15 +78,14 @@ class BootstrapAggregator(object):
          high=Score(precision=1.0, recall=0.66, fmeasure=0.80))}
   """
 
-  def __init__(self,
-               confidence_interval=0.95,
-               n_samples=1000):
+  def __init__(self, confidence_interval=0.95, n_samples=1000):
     """Initializes a BootstrapAggregator object.
 
     Args:
       confidence_interval: Confidence interval to compute on the mean as a
         decimal.
       n_samples: Number of samples to use for bootstrap resampling.
+
     Raises:
       ValueError: If invalid argument is given.
     """
@@ -102,12 +103,12 @@ class BootstrapAggregator(object):
     """Adds a sample for future aggregation.
 
     Args:
-      scores: Dict mapping score_type strings to Score object.
+      scores: Dict mapping score_type strings to a namedtuple object/class
+        representing a score.
     """
 
     for score_type, score in six.iteritems(scores):
-      self._scores[score_type].append((score.precision, score.recall,
-                                       score.fmeasure))
+      self._scores[score_type].append(score)
 
   def aggregate(self):
     """Aggregates scores previously added using add_scores.
@@ -119,14 +120,12 @@ class BootstrapAggregator(object):
     result = {}
     for score_type, scores in six.iteritems(self._scores):
       # Stack scores into a 2-d matrix of (sample, measure).
-      score_matrix = np.vstack(scores)
+      score_matrix = np.vstack(tuple(scores))
       # Percentiles are returned as (interval, measure).
       percentiles = self._bootstrap_resample(score_matrix)
       # Extract the three intervals (low, mid, high).
-      intervals = tuple((Score(
-          precision=percentiles[j, 0],
-          recall=percentiles[j, 1],
-          fmeasure=percentiles[j, 2]) for j in xrange(3)))
+      intervals = tuple(
+          (scores[0].__class__(*percentiles[j, :]) for j in range(3)))
       result[score_type] = AggregateScore(
           low=intervals[0], mid=intervals[1], high=intervals[2])
     return result
@@ -136,6 +135,7 @@ class BootstrapAggregator(object):
 
     Args:
       matrix: A 2-d matrix of (sample, measure).
+
     Returns:
       A 2-d matrix of (bounds, measure). There are three bounds: low (row 0),
       mid (row 1) and high (row 2). Mid is always the mean, while low and high
@@ -146,7 +146,7 @@ class BootstrapAggregator(object):
 
     # Matrix of (bootstrap sample, measure).
     sample_mean = np.zeros((self._n_samples, matrix.shape[1]))
-    for i in xrange(self._n_samples):
+    for i in range(self._n_samples):
       sample_idx = np.random.choice(
           np.arange(matrix.shape[0]), size=matrix.shape[0])
       sample = matrix[sample_idx, :]

@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2018 The Google Research Authors.
+# Copyright 2019 The Google Research Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,12 +22,10 @@ from __future__ import print_function
 
 import abc
 import functools
-
+import gin
 from gym import spaces
 import numpy as np
 import tensorflow as tf
-
-import gin.tf
 from dql_grasping import cross_entropy
 
 
@@ -161,14 +159,14 @@ class RandomGraspingPolicyD4(Policy):
 
 
 @gin.configurable
-class InterpolatedPolicy(Policy):
+class PerStepSwitchPolicy(Policy):
   """Interpolates between an exploration policy and a greedy policy.
 
   A typical use case would be a scripted policy used to get some reasonable
   amount of random successes, and a greedy policy that is learned.
 
   Each of the exploration and greedy policies can still perform their own
-  exploration actions after being selected by the InterpolatedPolicy.
+  exploration actions after being selected by the PerStepSwitchPolicy.
   """
 
   def __init__(self, explore_policy_class, greedy_policy_class):
@@ -258,7 +256,7 @@ class CEMActorPolicy(TFDQNPolicy):
     """Compute action given an observation.
 
     This policy does not implement its own exploration strategy. Use
-    InterpolatedPolicy instead to perform exploration.
+    PerStepSwitchPolicy instead to perform exploration.
 
     Args:
       obs: np.float32 array of shape (height, width, 3), corresponding to an
@@ -387,7 +385,7 @@ class DDPGPolicy(TFDQNPolicy):
     """Compute action given an observation.
 
     This policy does not implement its own exploration strategy. Use
-    InterpolatedPolicy instead to perform exploration.
+    PerStepSwitchPolicy instead to perform exploration.
 
     Args:
       obs: np.float32 array of shape (height, width, 3), corresponding to an

@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2018 The Google Research Authors.
+# Copyright 2019 The Google Research Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -43,11 +43,11 @@ class DummyGreedyPolicy(policies.RandomGraspingPolicyD4):
 class PoliciesTest(parameterized.TestCase, test.TestCase):
 
   @parameterized.named_parameters(('i1', 0), ('i2', .5), ('i3', 1))
-  def testInterpolated(self, explore_prob):
+  def testPerStepSwitch(self, explore_prob):
     # Check that exploration is occurring as frequently as we expect.
     np.random.seed(0)
-    policy = policies.InterpolatedPolicy(policies.RandomGraspingPolicyD4,
-                                         DummyGreedyPolicy)
+    policy = policies.PerStepSwitchPolicy(policies.RandomGraspingPolicyD4,
+                                          DummyGreedyPolicy)
     actions = []
     for _ in range(100):
       action, _ = policy.sample_action(None, explore_prob)

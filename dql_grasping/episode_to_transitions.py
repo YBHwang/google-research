@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2018 The Google Research Authors.
+# Copyright 2019 The Google Research Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ from __future__ import division
 from __future__ import print_function
 
 import io
+import gin
 import numpy as np
 from PIL import Image
 from PIL import ImageFile
-
 import tensorflow as tf
-import gin.tf
+
 
 _bytes_feature = (
     lambda v: tf.train.Feature(bytes_list=tf.train.BytesList(value=v)))
